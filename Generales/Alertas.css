@@ -1,0 +1,117 @@
+#container {
+    --a-color-negro: #545454;
+    --a-color-primario: #FFFFFF;
+    --a-color-exito: #FFFFFF;
+    --a-color-alerta: #FFFFFF;
+    --a-color-error: #FFFFFF;
+
+    --a-fondo-blanco: #FFFFFF;
+    --a-fondo-primario: #0075C9;
+    --a-fondo-exito: #A5DC86;
+    --a-fondo-alerta: #F8BB86;
+    --a-fondo-error: #F27474;
+
+    --a-borde-blanco: #FFFFFF;
+    --a-borde-primario: #0075C9;
+    --a-borde-exito: #A5DC86;
+    --a-borde-alerta: #FACEA8;
+    --a-borde-error: #F27474;
+}
+
+.overlay-alerta {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .4);
+}
+
+    .overlay-alerta .alerta {
+        position: relative;
+        width: 500px;
+        left: calc(50% - 250px);
+        top: 25%;
+        background: #FFFFFF;
+        border-radius: 5px;
+        border: none;
+        padding: 20px;
+        font-family: Montserrat, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+        .overlay-alerta .alerta .contenido-alerta {
+            display: flex;
+            flex-direction: column;
+        }
+
+            .overlay-alerta .alerta .contenido-alerta svg,
+            .overlay-alerta .alerta .contenido-alerta .titulo-alerta,
+            .overlay-alerta .alerta .contenido-alerta .contenido-alerta {
+                width: fit-content;
+                align-self: center;
+            }
+
+            .overlay-alerta .alerta .contenido-alerta svg {
+                font-size: 6rem;
+                margin-bottom: 20px;
+            }
+
+            .overlay-alerta .alerta.tema-primario .contenido-alerta svg {
+                fill: var(--a-fondo-primario);
+                border-color: var(--a-borde-primario);
+            }
+
+            .overlay-alerta .alerta.tema-exito .contenido-alerta svg {
+                fill: var(--a-fondo-exito);
+                border-color: var(--a-borde-exito);
+            }
+
+            .overlay-alerta .alerta.tema-alerta .contenido-alerta svg {
+                fill: var(--a-fondo-alerta);
+                border-color: var(--a-borde-alerta);
+            }
+
+            .overlay-alerta .alerta.tema-error .contenido-alerta svg {
+                fill: var(--a-fondo-error);
+                border-color: var(--a-borde-error);
+            }
+
+            .overlay-alerta .alerta .contenido-alerta .titulo-alerta {
+                text-align: center;
+                margin: 10px;
+                font-size: 2rem;
+            }
+
+            .overlay-alerta .alerta .contenido-alerta .contenido-alerta {
+                margin: 10px;
+                text-align: center;
+                font-size: 1.4rem;
+            }
+
+        .overlay-alerta .alerta .botones-alerta {
+            display: flex;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+            .overlay-alerta .alerta .botones-alerta button {
+                padding: 10px 20px;
+                font-size: 1em;
+                border: 0;
+                border-radius: 0.25em;
+                background-color: var(--a-fondo-primario);
+                color: var(--a-color-primario);
+                margin: 10px 10px 0px 10px;
+            }
+
+                .overlay-alerta .alerta .botones-alerta button:hover {
+                    background-color: #0260A4;
+                }
+
+            .overlay-alerta .alerta .botones-alerta button.cancel-alerta {
+                background-color: var(--a-fondo-error);
+            }
+
+                .overlay-alerta .alerta .botones-alerta button.cancel-alerta:hover {
+                    background-color: #EF5555;
+                }

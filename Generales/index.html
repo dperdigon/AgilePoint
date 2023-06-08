@@ -1,0 +1,101 @@
+<html>
+    <head>
+        <title>Prueba Alertas y Notificaciones</title>
+
+        <link rel="stylesheet" href="Alertas.css"/>
+        <link rel="stylesheet" href="Notificaciones.css"/>
+
+        <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+        <script src="Alertas.js"></script>
+        <script src="Notificaciones.js"></script>
+    </head>
+    <body>
+        <button id="alert">Probar Alerta</button>
+        <button id="alert-exito">Probar Alerta Exito</button>
+        <button id="alert-alerta">Probar Alerta Warning</button>
+        <button id="alert-error">Probar Alerta Error</button>
+        <button id="alert-confirm">Probar Confirmación</button>
+        <button id="noti">Probar Notificacion</button>
+        <button id="noti-exito">Probar Notificacion Exito</button>
+        <button id="noti-alerta">Probar Notificacion Alerta</button>
+        <button id="noti-error">Probar Notificacion Error</button>
+        <button id="noti-confirm">Probar Notificacion Confirmar</button>
+
+        <script>
+            $(document).ready(function() {
+                $('#alert').click(function() {
+                    Alertas.Alertar({
+                        titulo: 'Alerta', 
+                        contenido: 'Esta es una prueba'
+                    });
+                });
+
+                $('#alert-exito').click(function() {
+                    Alertas.Alertar({
+                        titulo: 'Exito', 
+                        contenido: 'Esta es una prueba',
+                        tema: TemasAlerta.Exito
+                    });
+                });
+
+                $('#alert-alerta').click(function() {
+                    Alertas.Alertar({
+                        titulo: 'Warning', 
+                        contenido: 'Esta es una prueba',
+                        tema: TemasAlerta.Alerta
+                    });
+                });
+
+                $('#alert-error').click(function() {
+                    Alertas.Alertar({
+                        titulo: 'Alerta', 
+                        contenido: 'Esta es una prueba',
+                        tema: TemasAlerta.Error
+                    });
+                });
+
+                $('#alert-confirm').click(function() {
+                    Alertas.Alertar({
+                        titulo: 'Este es el título', 
+                        contenido: 'Esta es una prueba',
+                        tipo: TiposAlerta.Confirmacion,
+                        confirmText: "Si",
+                        confirm: function() {
+                            Notificaciones.Notificar({ contenido: 'Confirmado', tema: TemasNotificacion.Exito });
+                        },
+                        cancelText: "No",
+                        cancel: function() {
+                            Notificaciones.Notificar({ contenido: 'No confirmado', tema: TemasNotificacion.Error });
+                        }
+                    });
+                });
+
+                $('#noti').click(function() {
+                    Notificaciones.Notificar({ contenido: 'Esta es una prueba', posicion: PosicionesNotificacion.ArribaDerecha });
+                });
+
+                $('#noti-exito').click(function() {
+                    Notificaciones.Notificar({ contenido: 'Esta es una prueba', tema: TemasNotificacion.Exito });
+                });
+
+                $('#noti-alerta').click(function() {
+                    Notificaciones.Notificar({ contenido: 'Esta es una prueba', tema: TemasNotificacion.Alerta });
+                });
+
+                $('#noti-error').click(function() {
+                    Notificaciones.Notificar({ contenido: 'Esta es una prueba', tema: TemasNotificacion.Error });
+                });
+
+                $('#noti-confirm').click(function() {
+                    Notificaciones.Notificar({ 
+                        contenido: 'Esta es una prueba', 
+                        tipo: TiposNotificacion.Confirmacion, 
+                        confirm: function() {
+                            alert("Confirmado");
+                        }
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
