@@ -1,5 +1,3 @@
-alert("Prueba Dev");
-
 let Alertas = function() {
     let alertas = [];
 
