@@ -3778,6 +3778,15 @@ BEGIN TRY
 	FROM @Legacy L
 	LEFT JOIN CapexData__u CD ON CD.DocumentID__u = L.DocumentId
 
+	UPDATE CD SET
+		CD.DocumentComplementID__u = NULL
+	FROM CapexData__u CD
+	WHERE CD.DocumentID__u = CD.DocumentComplementID__u
+
+	UPDATE CD SET
+		CD.CapexSupplementary__u = ISNULL(CDH.DocumentID__u, 0)
+	FROM CapexData__u CD
+	LEFT JOIN CapexData__u CDH ON CDH.DocumentComplementID__u = CD.DocumentID__u
 
 	SELECT
 		CD.DocumentID__u,
