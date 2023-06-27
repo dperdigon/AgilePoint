@@ -20,23 +20,25 @@ Date			Author						Comments
 2019/10/31		Gustavo Alemán Zapata		Update to get Display_Name from table WF_ACTIVITY_INSTS
 2019/12/09		Gustavo Alemán Zapata		Change Left join to WF_REG_USERS, use USER_NAME instead of EMAIL_ADDRESS, and get ASSIGNED_DATE instead of CREATED_DATE
 2020/02/06		Gustavo Alemán Zapata		Add left join to TRAGeneralInformation__u tra and TRAGeneralInformation__u ruOriginal, to use full_Name and set like OnBehalf of
+2023/06/27		David Perdigón García  		Separate [Task] and [Role] fields
 ================================================================================================================================ */
-CREATE VIEW [dbo].[vw_GetApprovalFlow]
+ALTER VIEW [dbo].[vw_GetApprovalFlow]
 AS
 
-select		case when tra.ProcessID__u is not null and mw.USER_ID <> mw.ORIGINAL_USER_ID then
-				isNull(ru.FULL_NAME, '') + ' on behalf of ' + isNull(ruOriginal.FULL_NAME, '')
-			else
-				isNull(ru.FULL_NAME, '')
-			end [User]
-			,ai.DISPLAY_NAME as [Role]
-			,mw.[STATUS] as [Status]
-			,mw.PROC_INST_ID
-			,mw.ASSIGNED_DATE CREATED_DATE
-
-from		dbo.vw_WF_MANUAL_WORKITEMS mw
-left join	dbo.vw_WF_REG_USERS ru on mw.[USER_ID] = ru.USER_NAME
-left join	dbo.vw_WF_ACTIVITY_INSTS ai on ai.ID = mw.ACTIVITY_INST_ID
-left JOIN	dbo.vw_WF_REG_USERS ruOriginal on mw.ORIGINAL_USER_ID = ruOriginal.USER_NAME
-left join	UAT_AP_DataEntities_DB.dbo.TRAGeneralInformation__u tra on mw.PROC_INST_ID = tra.ProcessID__u
+SELECT	
+    [Task]          = AI.DISPLAY_NAME,
+    [User]          = CASE WHEN TRA.ProcessID__u IS NOT NULL AND MW.USER_ID <> MW.ORIGINAL_USER_ID THEN
+                        ISNULL(RU.FULL_NAME, '') + ' on behalf of ' + ISNULL(RUO.FULL_NAME, '')
+                    ELSE
+                        ISNULL(RU.FULL_NAME, '')
+                    END,
+    [Role]          = RU.TITLE,
+    [Status]        = MW.STATUS,
+    [PROC_INST_ID]  = MW.PROC_INST_ID,
+    [CREATED_DATE]  = MW.ASSIGNED_DATE
+FROM		dbo.vw_WF_MANUAL_WORKITEMS MW
+LEFT JOIN	dbo.vw_WF_REG_USERS RU ON MW.[USER_ID] = RU.USER_NAME
+LEFT JOIN	dbo.vw_WF_ACTIVITY_INSTS AI ON AI.ID = MW.ACTIVITY_INST_ID
+LEFT JOIN	dbo.vw_WF_REG_USERS RUO ON MW.ORIGINAL_USER_ID = RUO.USER_NAME
+LEFT JOIN	AP_Data_Entities_DB.dbo.TRAGeneralInformation__u TRA ON MW.PROC_INST_ID = TRA.ProcessID__u
 GO
