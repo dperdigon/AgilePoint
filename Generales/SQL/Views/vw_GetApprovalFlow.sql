@@ -26,19 +26,21 @@ ALTER VIEW [dbo].[vw_GetApprovalFlow]
 AS
 
 SELECT	
-    [Task]          = AI.DISPLAY_NAME,
-    [User]          = CASE WHEN TRA.ProcessID__u IS NOT NULL AND MW.USER_ID <> MW.ORIGINAL_USER_ID THEN
-                        ISNULL(RU.FULL_NAME, '') + ' on behalf of ' + ISNULL(RUO.FULL_NAME, '')
-                    ELSE
-                        ISNULL(RU.FULL_NAME, '')
-                    END,
-    [Role]          = RU.TITLE,
-    [Status]        = MW.STATUS,
-    [PROC_INST_ID]  = MW.PROC_INST_ID,
-    [CREATED_DATE]  = MW.ASSIGNED_DATE
+    [Task]              = AI.DISPLAY_NAME,
+    [User]              = CASE WHEN TRA.ProcessID__u IS NOT NULL AND MW.USER_ID <> MW.ORIGINAL_USER_ID THEN
+                            ISNULL(RU.FULL_NAME, '') + ' on behalf of ' + ISNULL(RUO.FULL_NAME, '')
+                        ELSE
+                            ISNULL(RU.FULL_NAME, '')
+                        END,
+    [Email]             = RU.USER_NAME,
+    [Role]              = RU.TITLE,
+    [Status]            = MW.STATUS,
+    [PROC_INST_ID]      = MW.PROC_INST_ID,
+    [CREATED_DATE]      = MW.ASSIGNED_DATE,
+    [COMPLETED_DATE]    = CONVERT(VARCHAR(20), MW.COMPLETED_DATE, 101) + ' ' + CONVERT(VARCHAR(20), MW.COMPLETED_DATE, 108)
 FROM		dbo.vw_WF_MANUAL_WORKITEMS MW
 LEFT JOIN	dbo.vw_WF_REG_USERS RU ON MW.[USER_ID] = RU.USER_NAME
 LEFT JOIN	dbo.vw_WF_ACTIVITY_INSTS AI ON AI.ID = MW.ACTIVITY_INST_ID
 LEFT JOIN	dbo.vw_WF_REG_USERS RUO ON MW.ORIGINAL_USER_ID = RUO.USER_NAME
-LEFT JOIN	AP_Data_Entities_DB.dbo.TRAGeneralInformation__u TRA ON MW.PROC_INST_ID = TRA.ProcessID__u
+LEFT JOIN	AP_DataEntities_DB.dbo.TRAGeneralInformation__u TRA ON MW.PROC_INST_ID = TRA.ProcessID__u
 GO
