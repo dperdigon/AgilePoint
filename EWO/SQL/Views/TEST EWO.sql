@@ -1,4 +1,4 @@
-SELECT TOP 1000
+SELECT
 	CAST(A.DocumentID__u AS VARCHAR) 'DocumentID',		
 	A.DocumentID__u 'Document',
 	A.ProjectDescription__u 'Project Description',
@@ -16,28 +16,27 @@ SELECT TOP 1000
 	B.DISPLAY_NAME AS 'Task',
 	B.FULL_NAME 'Approver',
 	B.EMAIL_ADDRESS,
-	A.StatusName__u 'Status Name',
+	B.TaskLevel,
+	CASE
+		WHEN B.TaskLevel = 'Requestor' AND B.STATUS = 'Completed' THEN 'Send'
+		WHEN B.TaskLevel = 'Requestor' AND B.STATUS = 'Cancelled' THEN 'Exit'
+		WHEN B.TaskLevel = 'Manager' AND B.STATUS = 'Completed' AND B2.DISPLAY_NAME = 'Engineer' THEN 'Approve'
+		WHEN B.TaskLevel = 'Manager' AND B.STATUS = 'Completed' AND B2.DISPLAY_NAME = 'Requestor' THEN 'Return form to requestor'
+		WHEN B.TaskLevel = 'Manager' AND B.STATUS = 'Cancelled' THEN 'Reject'
+		WHEN B.TaskLevel = 'Engineer' AND B.STATUS = 'Completed' AND B2.DISPLAY_NAME = 'Requestor' THEN 'Approve'
+		WHEN B.TaskLevel = 'Engineer' AND B.STATUS = 'Completed' AND B2.DISPLAY_NAME = 'Manager' THEN 'Reject'
+		WHEN B.TaskLevel = 'Approver' AND B.STATUS = 'Completed' AND B2.DISPLAY_NAME IS NULL THEN 'Approve'
+		WHEN B.TaskLevel = 'Approver' AND B.STATUS = 'Completed' AND B2.DISPLAY_NAME = 'Engineer' THEN 'Reject'
+		WHEN B2.DISPLAY_NAME IS NULL AND IIF(B.STATUS = 'Overdue', 'Assigned', IIF(B.STATUS = 'New', 'Assigned', B.STATUS)) = 'Assigned' THEN 'In Progress'
+		WHEN B2.DISPLAY_NAME IS NULL AND B.STATUS = 'Cancelled' THEN 'WF APP'
+		ELSE ''
+	END 'Button Pressed',
+	B.STATUS,
 	CONVERT(VARCHAR(20), CONVERT(DATETIME, B.ASSIGNED_DATE), 101) + ' ' + CONVERT(VARCHAR(20), CONVERT(DATETIME, B.ASSIGNED_DATE), 108) 'Date And Time',
 	CONVERT(DATETIME, B.STARTED_DATE) 'Request Creation Date Hidden',
-	(
-		CASE 
-			WHEN B.STATUS = 'Overdue' THEN 'Assigned' 
-			ELSE B.STATUS 
-		END
-	) 'Approver Status',
-	CASE
-		WHEN B.DISPLAY_NAME = 'Requestor' AND B.STATUS = 'Cancelled' THEN 'Requestor cancellation (withdrawal)'
-		WHEN B.DISPLAY_NAME = 'Approval Managers' AND B2.DISPLAY_NAME = 'Requestor' THEN 'Manager returns to requestor (reject)'
-		WHEN B.DISPLAY_NAME = 'Approval Managers' AND B.STATUS = 'Cancelled' THEN 'Manager rejection of EWO (cancel)'
-		WHEN B.DISPLAY_NAME = 'Engineering Responsible' AND B2.DISPLAY_NAME = 'Approval Managers' THEN 'Engineer returns to manager (return)'
-		WHEN B.DISPLAY_NAME = 'Engineering Responsible' AND B.STATUS = 'Cancelled' THEN 'Engineer rejection of EWO (cancel)'
-		WHEN B.DISPLAY_NAME = 'Review' AND B2.DISPLAY_NAME = 'Engineering Responsible' THEN 'Approver returns to engineer (rework)'
-		WHEN B.DISPLAY_NAME = 'Review' AND B.STATUS = 'Cancelled' THEN 'Approver rejection of EWO (cancel)'
-		ELSE ''
-	END 'Status',
 	A.ProcessID__u
 FROM EWOFormData__u A
 LEFT JOIN vw_TasksWithOrderForEwo B ON B.PROC_INST_ID = A.ProcessID__u
 LEFT JOIN vw_TasksWithOrderForEwo B2 ON B2.PROC_INST_ID = A.ProcessID__u AND B2.TaskNum = (B.TaskNum + 1)
 LEFT JOIN GBLComment__u C ON C.EwoRequest__u = A.DocumentID__u AND LOWER(C.CREATED_BY) = LOWER(B.EMAIL_ADDRESS)
-ORDER BY B.ASSIGNED_DATE DESC
+WHERE B.[STATUS] <> 'Removed'
